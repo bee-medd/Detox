@@ -1,0 +1,36 @@
+plugins {
+    id "com.android.application"
+    id "kotlin-android"
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+android {
+    namespace "com.example.detox"
+    compileSdk 34
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    defaultConfig {
+        applicationId "com.example.detox"
+        minSdk 21
+        targetSdk 34
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.debug
+        }
+    }
+}
