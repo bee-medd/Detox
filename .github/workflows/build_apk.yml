@@ -11,27 +11,44 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 1. جلب الملفات الحالية من المستودع (الكود و pubspec فقط)
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # 2. تثبيت جافا
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
 
+      # 3. تثبيت Flutter
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
           cache: true
 
+      # 4. بناء مشروع أندرويد رسمي ونظيف عبر فلاتر مباشرة داخل السيرفر
+      - name: Recreate Fresh Flutter Android Project
+        run: |
+          mkdir temp_build
+          cd temp_build
+          flutter create --org com.minimalist --platforms android detox_app
+          
+          # نقل ملفات الأندرويد الرسمية والجديدة إلى مشروعنا الرئيسي
+          cp -r detox_app/android ../
+          cp -r detox_app/.metadata ../ 2>/dev/null || true
+
+      # 5. تثبيت المكتبات (dependencies)
       - name: Install dependencies
         run: flutter pub get
 
+      # 6. بناء ملف الـ APK النهائي بنجاح
       - name: Build APK
         run: flutter build apk --release --no-tree-shake-icons
 
+      # 7. رفع التطبيق الجاهز لتحميله على الهاتف
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
