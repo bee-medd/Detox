@@ -2,49 +2,38 @@ name: Build Flutter APK
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1. جلب الكود الحالي (lib و pubspec فقط)
-      - name: Checkout code
+      - name: Checkout project
         uses: actions/checkout@v4
 
-      # 2. تثبيت جافا
-      - name: Set up Java
+      - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: zulu
           java-version: '17'
 
-      # 3. تثبيت Flutter
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
-          cache: true
+          channel: stable
 
-      # 4. توليد مجلد أندرويد رسمي متوافق ومتكامل ومحدث داخل السيرفر
-      - name: Generate Fresh Android Project
-        run: |
-          flutter create --org com.minimalist --platforms android .
-
-      # 5. جلب المكتبات وضبط الإعدادات
-      - name: Install dependencies
+      - name: Get packages
         run: flutter pub get
 
-      # 6. بناء ملف الـ APK النهائي
-      - name: Build APK
+      - name: Build Release APK
         run: flutter build apk --release --no-tree-shake-icons
 
-      # 7. رفع التطبيق الجاهز للتحميل
-      - name: Upload APK Artifact
+      - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: Detox-App
+          name: ReplyBoss-AI-release-apk
           path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 1
+          if-no-files-found: error
