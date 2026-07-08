@@ -24,6 +24,9 @@ jobs:
         with:
           channel: stable
 
+      - name: Generate missing Flutter Android files
+        run: flutter create --platforms=android .
+
       - name: Get packages
         run: flutter pub get
 
